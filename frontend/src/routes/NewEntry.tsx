@@ -4,7 +4,7 @@ import { Entry, EntryContextType } from '../@types/context';
 import { ThemeContext } from '../utilities/themeContext';
 
 export default function NewEntry() {
-  const emptyEntry: Entry = { title: '', description: '', created_at: new Date() };
+  const emptyEntry: Entry = { title: '', description: '', created_at: new Date(), scheduled_date: new Date() };
   const { saveEntry } = useContext(EntryContext) as EntryContextType;
   const [newEntry, setNewEntry] = useState<Entry>(emptyEntry);
   const { isDarkMode } = useContext(ThemeContext);
@@ -48,6 +48,8 @@ export default function NewEntry() {
         value={newEntry.description}
         onChange={handleInputChange}
       />
+        <label>
+      Created at:
       <input
         className={inputClass}
         type="date"
@@ -55,8 +57,20 @@ export default function NewEntry() {
         value={(new Date(newEntry.created_at)).toISOString().split('T')[0]}
         onChange={handleInputChange}
       />
+    </label>
+
+<label>
+  Scheduled date:
+  <input
+    className={inputClass}
+    type="date"
+    name="scheduled_date"
+    value={(new Date(newEntry.scheduled_date)).toISOString().split('T')[0]}
+    onChange={handleInputChange}
+  />
+</label>
       <button onClick={(e) => { handleSend(e) }} className={buttonClass}>
-        Create
+        Schedule
       </button>
     </section>
   );
