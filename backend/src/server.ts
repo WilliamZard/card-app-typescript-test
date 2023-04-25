@@ -18,6 +18,12 @@ server.get<{ Reply: Entry[]; Params: { id: string } }>(
     const dbEntry = await Prisma.entry.findMany({
       where: { id: req.params.id },
     });
+
+    // add scheduled_date
+    if (dbEntry.length > 0) {
+      dbEntry[0].scheduled_date = new Date(dbEntry[0].scheduled_date.toISOString());
+    }
+
     reply.send(dbEntry);
   }
 );
@@ -27,6 +33,10 @@ server.post<{ Body: Entry }>("/create/", async (req, reply) => {
   newEntryBody.created_at
     ? (newEntryBody.created_at = new Date(req.body.created_at))
     : (newEntryBody.created_at = new Date());
+
+  // add scheduled_date field
+  newEntryBody.scheduled_date = new Date(req.body.scheduled_date);
+
   try {
     const createdEntryData = await Prisma.entry.create({ data: req.body });
     reply.send(createdEntryData);
@@ -49,7 +59,8 @@ server.put<{ Params: { id: string }; Body: Entry }>(
   async (req, reply) => {
     try {
       await Prisma.entry.update({
-        data: req.body,
+        // add scheduled_date
+        data: { ...req.body, scheduled_date: new Date(req.body.scheduled_date) },
         where: { id: req.params.id },
       });
       reply.send({ msg: "Updated successfully" });
